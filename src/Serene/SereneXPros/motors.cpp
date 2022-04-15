@@ -95,7 +95,6 @@ void create_motor_instance(lua_State *L) {
 
     // If Metatable isn't initialized, then initialize it
     if (luaL_newmetatable(L,SERENE_MOTOR_API_METATABLE)) {
-        // stack = ["Component Name", {}, mt]
         static struct luaL_Reg motors_metatable[] {
             {"set_speed",motor_instance_set_speed},
             {NULL,NULL},

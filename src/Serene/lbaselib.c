@@ -32,26 +32,37 @@
 
 /*
 
-  prints onto the lcd screen.
+  Prints onto Terminal
 
 */
 
-static int luaB_print (lua_State *L) {
-  int n = lua_gettop(L);  /* number of arguments */
-  int i;
-  for (i = 1; i <= n; i++) {  /* for each argument */
-    size_t l;
-    const char *s = luaL_tolstring(L, i, &l);  /* convert it to string */
-    if (i > 1)  /* not the first element? */
-      lua_writestring("\t", 1);  /* add a tab before it */
-    //OG Code: lua_writestring(s, l);  /* print it */
-    // Serene Addition
-    lcd_set_text(1,s);
-    lua_pop(L, 1);  /* pop result */
-  }
-  // lua_writeline();
-  return 0;
+static int luaB_print(lua_State *L) {
+  printf(lua_tostring(L,1)); /* print onto terminal */
+  // if there are more arguments
+  int n = lua_gettop(L); /* number of arguments */
+  for (int i = 2; i <= n; i++)
+    /* add a tab before, then print it */
+    printf("\t%s",lua_tostring(L,1));
+
+  /* New line ayo, also adding a \n at the end flushes stdout */ 
+  printf("\n");
 }
+
+// ORIGINAL LUA54 CODE
+// static int luaB_print (lua_State *L) {
+//   int n = lua_gettop(L);  /* number of arguments */
+//   int i;
+//   for (i = 1; i <= n; i++) {  /* for each argument */
+//     size_t l;
+//     const char *s = luaL_tolstring(L, i, &l);  /* convert it to string */
+//     if (i > 1)  /* not the first element? */
+//     lua_writestring("\t", 1);  /* add a tab before it */
+//     lua_writestring(s, l);  /* print it */
+//     lua_pop(L, 1);  /* pop result */
+//   }
+//   // lua_writeline();
+//   return 0;
+// }
 
 /*
 

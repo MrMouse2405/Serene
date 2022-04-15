@@ -9,6 +9,7 @@
 
 */
 #include "motors.hpp"
+#include "controller.hpp"
 
 /*
 
@@ -70,6 +71,8 @@ static int vex_lib_init(lua_State *L) {
 
     if (!strcmp(str,"Motor"))
         create_motor_instance(L);
+    else if (!strcmp(str,"Controller"))
+        create_controller_instance(L);
     else
         luaL_error(L,"Serene: Component (%s) doesn't exist, maybe a typo?\n",str);
     
