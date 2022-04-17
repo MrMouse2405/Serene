@@ -11,7 +11,6 @@
 #include "SereneXPros/vex.hpp"
 #include <stdio.h>
 
-
 // Lua Interpreter Stack
 static lua_State* L;
 
@@ -19,6 +18,7 @@ static inline void cleanup (lua_State *L) {
     lua_settop(L,0);
     lua_gc(L,LUA_GCCOLLECT);
 }
+
 /*
     Quickly initializes Serene and Lua
 
@@ -27,7 +27,6 @@ static inline void cleanup (lua_State *L) {
 */
 
 void serene_initialize() {
-
 
     // initialize Lua interpreter
     L = luaL_newstate();
