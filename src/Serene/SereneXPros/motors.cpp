@@ -34,6 +34,54 @@ static int motor_instance_set_speed(lua_State *L) {
     return 0; 
 }
 
+/*
+
+    motor_instance_set_brake(lua_State *l)
+
+    This method is responsible for setting braking options of a motor object
+    given it's task defined by the user.
+
+
+    Lua Example:
+
+    ```.lua
+
+        motor:set_brake(coast)
+        motor:set_brake(hold)
+
+    ```
+
+*/
+
+static int motor_instance_set_brake(lua_State *L) {
+
+    /*
+        typedef enum motor_brake_mode_e {
+            E_MOTOR_BRAKE_COAST = 0, // Motor coasts when stopped, traditional behavior
+            E_MOTOR_BRAKE_BRAKE = 1, // Motor brakes when stopped
+            E_MOTOR_BRAKE_HOLD = 2, // Motor actively holds position when stopped
+            E_MOTOR_BRAKE_INVALID = INT32_MAX
+        } motor_brake_mode_e_t;
+    */
+
+    // stack = [self]
+    pros::Motor *self = (pros::Motor *) luaL_checkudata(L, 1,SERENE_MOTOR_API_METATABLE);
+    const char *brakeType = luaL_checkstring(L,2);
+    pros::motor_brake_mode_e_t id;
+
+    if (!strcmp(brakeType,"coast")) 
+        id = pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_COAST;
+    else if (!strcmp(brakeType,"hold"))
+        id = pros::motor_brake_mode_e_t::E_MOTOR_BRAKE_HOLD;
+    else
+        luaL_error(L,"Serene/Motors: Brake type %s doesn't exist. (only coast or hold).\n", brakeType);
+
+    // stack = [self, magnitude]
+
+    self->set_brake_mode(id);
+
+    return 0; 
+}
 
 /*
 
@@ -97,6 +145,7 @@ void create_motor_instance(lua_State *L) {
     if (luaL_newmetatable(L,SERENE_MOTOR_API_METATABLE)) {
         static struct luaL_Reg motors_metatable[] {
             {"set_speed",motor_instance_set_speed},
+            {"set_brake",motor_instance_set_brake},
             {NULL,NULL},
         };
         lua_pushstring(L, "__index");
