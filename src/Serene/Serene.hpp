@@ -1,19 +1,39 @@
+/*
+
+    Serene.hpp
+
+    Note: Read main.cpp's documentation if you havent
+    
+    File responsible for initializing, and running Serene
+    Framework. This file is also responsible for calling
+    and running lua.
+
+*/
+
 #ifndef EzVex
 #define EzVex 
 
-// Lua Libs
 #include "lua.hpp"
-
-// Vex Pros Lib
 #include "main.h"
-
-// Serene Libs
 #include "SereneXPros/vex.hpp"
 #include "SereneInternals/EventLoop.hpp"
 #include <stdio.h>
 
-// Lua Interpreter Stack
+/*
+
+    Points to the Lua Interpreter
+
+*/
+
 static lua_State* L;
+
+/*
+
+    A clean up function
+    
+    Clears lua stack, and runs garbage collector
+
+*/
 
 static inline void cleanup (lua_State *L) {
     lua_settop(L,0);
@@ -21,9 +41,12 @@ static inline void cleanup (lua_State *L) {
 }
 
 /*
-    Quickly initializes Serene and Lua
 
-    Runs vex.on_init() if assigned by the user
+    serene_initialize()
+
+    When: Runs during initialization phase
+    Why:  To quickly initializes Serene and Lua
+          To run vex.on_init() if assigned by the user
 
 */
 
@@ -31,79 +54,64 @@ void serene_initialize() {
 
     printf("\n================INITIALISING===========\n");
 
-    // initialize Lua interpreter
+    /*
+    
+        Initialize Lua
+    
+    */
+
     L = luaL_newstate();
-
-    printf("1\n");
-
-    // load Lua base libraries (print / math / etc)
     luaL_openlibs(L);
+    
 
+    /*
     
-    printf("2\n");
+        Load our Lua File
     
-    // Loading Lua File
-    // MICRO SD BROKEN OR WHATEVER
+    */
+
     int Error = luaL_dofile(L,"/usd/Serene/App.lua");
 
-
-    //  int Error = luaL_dostring(L,R""""(
-    //     local controller = vex.init("Controller",{type="master"})
-    //     local motor = vex.init("Motor",{port=1})
-
-    //     local function run_motor(power)
-    //         print(power)
-    //         motor:set_speed(power)
-    //     end
-
-
-    //     controller:bind_periodic("RX",run_motor)
-
-    //     vex.on_opcontrol = function()
-    //         print("In OP CONTROL")
-    //     end
-    //  )"""");
-
-    printf("3\n");
-
-    using namespace pros::lcd;    
 
     if(Error) {
         printf("Serene: Failed to load lua file\n"); 
         printf("Lua: %s\n",lua_tostring(L,-1));
-        //print the error message
-        //lua_close(L);
         exit(-1);
     }
-    else {
+    
+    else
         printf("Serene: Lua File Loaded Successfully\n");
-        set_text(2, "Serene: Lua File Loaded Succesfully");
-    }
+    
 
-    // Run Init Lua Code
+    // get our global vex table, get field on_init, if it's assigned with a function, run it.
     lua_getglobal(L,"vex");
     lua_getfield(L,-1,"on_init");
     if(!lua_isnil(L,-1) && lua_isfunction(L,-1))
         if(lua_pcall(L,0,0,0))
             luaL_error(L, "Lua: %s",lua_tostring(L,-1));
 
-    // clean up
     cleanup(L);
-    
-    // // Cleanup:  Deallocate all space assocatated with the lua state */
-    // lua_close(L);
-    
-    // // Close Log File
-    // fclose(logfile);
 
     printf("\n================INITIALISED===========\n");
 
 }
 
+/*
+
+    serene_autonomous()
+
+    When: Runs during autonomous phase
+    Why:  To run vex.on_autonomous() if assigned by the user
+
+*/
+
+
 void serene_autonomous() {
-    //open log file
+
+    /*
     
- // Run Autonomous Lua Code
+    */
+
     lua_getglobal(L,"vex");
     lua_getfield(L,-1,"on_autonomous");
     if(!lua_isnil(L,-1) && lua_isfunction(L,-1))

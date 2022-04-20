@@ -1,21 +1,98 @@
+/*
+
+	Serene
+
+	A Light weight blazing fast framework built on top of pros
+	that embed Lua programming language.
+
+	For Users:
+	Visit Website https://mrmouse2405.gitbook.io/serene/
+
+	For Contributors, Code Reviewers, or Developers:
+
+		Files to Ignore:
+			These are Lua 5.4 files, little to no changes have been
+			made in them, nor will be made. If any file names under
+			src/Serene/ start with 'l' or 'L', ignore them, changing them
+			will modify behaviour of Lua Programming Language, not 
+			Serene. Any pull requests to these files, will be declined
+			unless there is an important reason.
+
+		Serene Files:
+			These are files that are responsible for running Serene.
+
+			Serene/Serene.h
+				- This file initializes serene, runs Lua 5.4,
+				  the serene event loop, and calls lua code that is 
+				  supposed to run in each phase. For example during
+				  init phase, autonomous phase, operator control, etc
+
+			Serene/SereneInternals:
+				- This folder contains all files essential for running
+				  important serene internal processes. These are abstracted
+				  from lua interface. Reason it's under "Internals"
+				- If any updates or changes are to be made to modify
+				  Serene, this and Serene.h is where you should look.
+				- Notable mentions:
+					- Event Loop
+
+			Serene/SereneXPros:
+				- This folder contains all files that allow lua to interact
+				  with underlying pros api through an interface provided by
+				  Serene.
+				- If any updates or changes are to be made to the vex library
+				  provided by serene, or other serene apis, that are accessed
+				  by Lua, this where you should look.
+				- Notable mentions:
+				    - vex.cpp -> the vex library
+					- other files -> all components created using vex.init()
+
+		Lua files that are changed.
+			For embedding Lua 5.4 onto Vex, these are the files
+			that are changed either to communicate with underlying
+			OS, or to add more functionalities.
+
+			linit.c
+			- File responsible for initializing all global lua libraries.
+			- We have added vex lib (included from SereneXPros/vex.hpp) to 
+			  the global lib registery in here to allow users to access 
+			  vex library globally.
+			- Some files are
+
+			lbaselib.c
+			- File responsible for initializing all global functions, such as
+			  print(), tonumber(), tostring(), etc.
+			- We have changed some of the functions in this file, to make it
+			  easier to embed lua, and improve user experience.
+
+		Other Lua Changes:
+		    - Default Lua Integer is long long, but in serene it is int.
+			  - This is because, Vex V5 runs ARM CORTEX which is a 32 bit processor,
+			    a integer, whose size is 32 bit, is natural to the processor, and is therefore
+				faster.
+
+		Notes for people who are not familiar with Lua C API:
+		  - lua_State, is the lua interperter instance.
+		  - lua.hpp includes:
+		     - lua.h -> includes basic functions, and macros for communicating with lua
+			 - lauxlib.h -> Lua Auxilary Lib
+		  - You can find plenty of resources online, as Lua is a quite well know language.
+		  - We have also tried our best to document our code, you should be able to find it easy.
+
+*/
+
 #include "main.h"
 #include "./Serene/Serene.hpp"
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
-}
+
+/*
+
+	All the functions defined here
+
+	Are called from Vex to run the robot
+
+
+*/
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -25,7 +102,6 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::register_btn1_cb(on_center_button);
 	serene_initialize();
 }
 
