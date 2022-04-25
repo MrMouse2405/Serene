@@ -1,5 +1,5 @@
 # Serene
-A simplistic blazing fast lightweight vex framework with a serene interface to program vex robots. Uses Lua (fastest scripting language) for scripting.
+A simplistic 🚀BLAZING FAST lightweight vex framework with an easy and pragmatic interface to program vex robots. Uses Lua (fastest scripting language) for scripting.
 
 Official Documentation Webpage: https://mrmouse2405.gitbook.io/serene/
 
