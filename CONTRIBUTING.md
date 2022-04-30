@@ -2,10 +2,9 @@
 
 Thank you for contributing to our open source project! We are always looking for improvments and new features to improve our project.
 
-Here is a set of guidlines for anyone looking to conbtribute or participate in discussions regarding Serene:
-
-## Community Code of Conduct
-
-First and foremost we ask for anyone participating in discussions or forums to be respectful to all moderators and other memebers of the Serene Community. We want to create a respectful and approachable community that can serve as a guide to anyone looking to use Sere as well as creating the best project possible.
+Here is a set of guidlines for anyone looking to conbtribute to Serene:
 
 ## Contributing Guide and Standards
+
+> If you are looking to resolve an existing issue, add a new feature, or add documentation, please begin by **creating an issue** for the changes you are hoping to make.
+> All proposed changes are expected to be submitted as pull requests and we ask that contributiors preferably reference their pull request in the issue they have created. We will review the pull request and will either respond with any concerns or comments we have with the request or merge it with ```Serene:main```.
