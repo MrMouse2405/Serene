@@ -64,23 +64,6 @@ static int luaB_print(lua_State *L) {
 //   return 0;
 // }
 
-/*
-
-  logs into Serene.log
-
-*/
-#include <stdio.h>
-static FILE *logfile = NULL; // Initialized in lua_openbase()
-static int sereneB_log (lua_State *L) {
-  const char *s = lua_tostring(L, 1);  /* convert it to string */
-  logfile = fopen("/usd/Serene/UserActivity.log","a");
-  fputs("user: ",logfile);
-  fputs(s,logfile);
-  fputs("\n",logfile);
-  fclose(logfile);
-  lua_pop(L, 1);  /* pop result */
-  return 0;
-}
 
 
 /*
@@ -551,8 +534,6 @@ static int luaB_tostring (lua_State *L) {
 
 static const luaL_Reg base_funcs[] = {
   //serene
-  //{"serene_log",sereneB_log},
-
   // lua
   {"assert", luaB_assert},
   {"collectgarbage", luaB_collectgarbage},

@@ -3,68 +3,71 @@
 #include <iostream>
 #include <mutex>
 
-using std::vector;
 using EventLoop::SereneEvent;
+using std::vector;
 
 pros::Mutex mutex;
 
 auto RegisteredEvents = vector<SereneEvent>();
 auto RegisteredPeriodicEvent = vector<EventLoop::SerenePeriodicEvent>();
-auto FiredEvents = vector<SereneEvent*>();
+auto FiredEvents = vector<SereneEvent *>();
 
-
-
-void EventLoop::register_event(SereneEvent newEvent) {
+void EventLoop::register_event(SereneEvent newEvent)
+{
     mutex.take(TIMEOUT_MAX);
     RegisteredEvents.push_back(newEvent);
     mutex.give();
 }
 
-void EventLoop::register_periodic_event(EventLoop::SerenePeriodicEvent newEvent) {
+void EventLoop::register_periodic_event(EventLoop::SerenePeriodicEvent newEvent)
+{
     mutex.take(TIMEOUT_MAX);
     RegisteredPeriodicEvent.push_back(newEvent);
     mutex.give();
 }
 
-
 // IDEMPOTENT CANNOT SPAWN ANOTHER
-void EventLoop::run_event_listener() {
+void EventLoop::run_event_listener()
+{
     printf("Initialized Event Listenered. Up and Running\n");
-    pros::Task{[=] {
-        for (;;) {
+    pros::Task{[=]
+               {
+                   for (;;)
+                   {
 
-           mutex.take(TIMEOUT_MAX);
+                       mutex.take(TIMEOUT_MAX);
 
-            for(SereneEvent event : RegisteredEvents)
-                if (event.Triggered())
-                    FiredEvents.push_back(&event);
-            
-            
-            mutex.give();
+                       for (SereneEvent event : RegisteredEvents)
+                           if (event.Triggered())
+                               FiredEvents.push_back(&event);
 
-            pros::Task::delay(10);
-        }
-    }};
+                       mutex.give();
+
+                       pros::Task::delay(10);
+                   }
+               }};
 }
 
-void EventLoop::run_event_loop() {
+void EventLoop::run_event_loop()
+{
     // Runs in Main Thread
-    //pros::Task{[=] {
-        printf("Event Loop Initialized. Up and Running! \n");
-        for (;;) {
-            mutex.take(TIMEOUT_MAX);
+    // pros::Task{[=] {
+    printf("Event Loop Initialized. Up and Running! \n");
+    for (;;)
+    {
+        mutex.take(TIMEOUT_MAX);
 
-            for(SereneEvent *event : FiredEvents)
-                event->runCallback();
-            
-            for(auto event : RegisteredPeriodicEvent)
-                event.runCallback();
-            
-            FiredEvents.clear();
-            mutex.give();
-            
-            pros::Task::delay(5);
-        }
+        for (SereneEvent *event : FiredEvents)
+            event->runCallback();
+
+        for (auto event : RegisteredPeriodicEvent)
+            event.runCallback();
+
+        FiredEvents.clear();
+        mutex.give();
+
+        pros::Task::delay(5);
+    }
     //}
     //};
 }
